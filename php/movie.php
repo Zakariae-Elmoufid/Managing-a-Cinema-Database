@@ -9,7 +9,7 @@ class movie {
     private $director;
     private $distribution;
 
-    public function __construct($title,$gender,$duration,$release_date,$director,$distribution){
+    public function add_movie($title,$gender,$duration,$release_date,$director,$distribution){
               $this->title = $title;
               $this->gender = $gender;
               $this->duration = $duration;
@@ -19,13 +19,13 @@ class movie {
     }
 
     public function display_movie(){
-      $myArray = [ $this->title ,
+      $movies = [ $this->title ,
         $this->gender ,
         $this->duration ,
         $this->release_date ,
         $this->director ,
         $this->distribution ];
-        return $myArray;
+        return $movies;
     }
 
     public function update_movie(){
@@ -38,8 +38,8 @@ class movie {
 
 }
 
-$TheGreenMile=  new movie("The Green Mile","Drame fantastique","189 minutes", "Décembre 1999 (Sortie aux États-Unis)","Frank Darabont", "David Morse");
-
+$TheGreenMile =  new movie();
+$TheGreenMile->add_movie("The Green Mile","Drame fantastique","189 minutes", "Décembre 1999 (Sortie aux États-Unis)","Frank Darabont", "David Morse");
 echo '<pre>';
 print_r($TheGreenMile->display_movie());
 
