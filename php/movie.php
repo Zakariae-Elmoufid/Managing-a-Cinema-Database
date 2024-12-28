@@ -1,4 +1,7 @@
 <?php 
+
+include '../data/config.php';
+
 class movie {
 
     //propertie
