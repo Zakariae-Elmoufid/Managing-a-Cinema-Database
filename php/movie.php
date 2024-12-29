@@ -11,75 +11,73 @@ class movie {
     private $release_date;
     private $director;
     private $distribution;
+    private $pdo;
 
-    private $conn; 
+  
 
-    // Constructor to set the database connection
-    public function __construct($conn) {
-        $this->conn = $conn;
+    public function __construct($pdo) {
+      $this->pdo = $pdo;
     }
 
-    // Add movie details
-    public function add_movie($title, $gender, $duration, $release_date, $director, $distribution) {
-        $this->title = $title;
-        $this->gender = $gender;
-        $this->duration = $duration;
-        $this->release_date = $release_date;
-        $this->director = $director;
-        $this->distribution = $distribution;
-    }
+  public function addMovie($title, $gender, $duration, $release_date, $director, $distribution) {
+    $sql = "INSERT INTO movies (title, gender, duration, release_date, director, distribution) 
+            VALUES (:title, :gender, :duration, :release_date, :director, :distribution)";
 
-    // Insert movie into the database
-    public function insert_movie() {
-        $sql = "INSERT INTO movies (title, gender, duration, release_date, director, distribution) 
-                VALUES (?, ?, ?, ?, ?, ?)";
+    $stmt = $this->pdo->prepare($sql);
 
-        $stmt = $this->conn->prepare($sql);
-        $stmt->bind_param("ssssss", $this->title, $this->gender, $this->duration, $this->release_date, $this->director, $this->distribution);
+    $stmt->bindParam(':title', $title);
+    $stmt->bindParam(':gender', $gender);
+    $stmt->bindParam(':duration', $duration);
+    $stmt->bindParam(':release_date', $release_date);
+    $stmt->bindParam(':director', $director);
+    $stmt->bindParam(':distribution', $distribution); 
 
-        ($stmt->execute()) ;
-        $stmt->close();
-    }
+    
+    $stmt->execute();
+}
 
     // Display movie details
-    public function display_movie() {
-        $movies = [
-            $this->title,
-            $this->gender,
-            $this->duration,
-            $this->release_date,
-            $this->director,
-            $this->distribution
-        ];
-        return $movies;
+      public function getMovies() {
+        $sql = "SELECT * FROM movies";
+        $stmt = $this->pdo->query($sql);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    // Mettre à jour un film
+    public function updateMovie($id, $title, $gender, $duration, $release_date, $director, $distribution) {
+        $sql = "UPDATE movies 
+                SET title = :title, genre = :gender, duration = :duration, release_date = :release_date, 
+                    director = :director, distribution = :distribution 
+                WHERE id = :id";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindParam(':id',$id);
+        $stmt->bindParam(':title', $title);
+        $stmt->bindParam(':gender', $gender);
+        $stmt->bindParam(':duration', $duration);
+        $stmt->bindParam(':release_date', $release_date);
+        $stmt->bindParam(':director', $director);
+        $stmt->bindParam(':distribution', $distribution); 
+
+        
+        echo "Film mis à jour avec succès !";
+    }
+
+    // Supprimer un film
+    public function deleteMovie($id) {
+        $sql = "DELETE FROM movies WHERE id = :id";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindParam(':id',$id);
+
+        $stmt->execute();
+        
+        echo "Film supprimé avec succès!";
     }
 }
 
-// Initialize database connection
-$conn = new mysqli($servername, $username, $password, $database);
 
 
 
-// Create movie instance
-$TheGreenMile = new movie($conn);
 
-// Add movie details
-$TheGreenMile->add_movie(
-    "The Green Mile",
-    "Drame fantastique",
-    "189 minutes",
-    "1999-12-10",
-    "Frank Darabont",
-    "David Morse"
-);
 
-// Insert movie into the database
-$TheGreenMile->insert_movie();
-
-// Display movie details
-echo '<pre>';
-print_r($TheGreenMile->display_movie());
-echo '</pre>';
-
-$conn->close();
 ?>
